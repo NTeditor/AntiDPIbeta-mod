@@ -7,7 +7,7 @@
 #Main config
 use_iptables="3"; #0=use nftables(OpenWRT), 1=use full iptables(LineageOS), 2=use lite iptables(OfficialFW), 3=use bad iptables(HarmonyOS)
 uselist="1"; #Enable or disable auto host list
-dpi_list_path="/sdcard/Android/dpi/"; #Path for host lists and desync fake bin files (for Android set "/sdcard/Android")
+dpi_list_path="/sdcard/Android"; #Path for host lists and desync fake bin files (for Android set "/sdcard/Android")
 mkhlist="1"; #Auto creating host lists for Youtube and Discord
 ###################
 dpi_list="DPI_list.txt"; #Url list 
