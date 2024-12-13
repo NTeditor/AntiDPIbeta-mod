@@ -1,6 +1,7 @@
 id=antidpi
-name=AntiDPI
-version=v3.2
-versionCode=32
-author=MIR371
-description=Internet without sites blocks
+name=AntiDPI & ТСПУ 
+version=v0.3
+versionCode=3
+author=NTeditor (Автор оригенальной версии MIR371)
+description=Интернет без заблокированных сайтов (Пока что....)
+updateJson="https://raw.githubusercontent.com/NTeditor/AntiDPIbeta-mod/refs/heads/dev/upgrade/magisk.json?token=GHSAT0AAAAAACZZJI7G25ANWTXWY2NWCTFIZ23UWIQ"
