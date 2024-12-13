@@ -27,17 +27,7 @@ HOSTLIST_NOAUTO="--hostlist-auto=$dpi_list_path/$dpi_list --hostlist-exclude=$dp
 
 ###################
 #Desync config 
-DesyncHTTP="--filter-tcp=80,8000 --wssize=1:6 --dpi-desync=split --dpi-desync-fooling=md5sig,badsum --dpi-desync-ttl=0 $HOSTLIST_NOAUTO";
-
-Desync1="--new --filter-tcp=443 --dpi-desync=fake,split2 --dpi-desync-repeats=11 --dpi-desync-fooling=md5sig --dpi-desync-fake-tls=$fakedir/tls_clienthello_www_google_com.bin --hostlist=$dpi_list_path/list-youtube.txt --new --filter-udp=443 --hostlist=$dpi_list_path/list-youtube.txt --dpi-desync=fake --dpi-desync-repeats=11 --dpi-desync-fake-quic=$fakedir/quic_initial_www_google_com.bin"; #YouTube
-Desync2="--new --filter-udp=50000-50099 --dpi-desync=fake --dpi-desync-any-protocol --dpi-desync-fake-quic=0xC30000000108"; #Discord
-
-#Desync3="--new ";
-#Desync4="--new ";
-#Desync5="--new ";
-
-DesyncHTTPS="--new --filter-tcp=443 --hostlist-exclude=/sdcard/Android/dpi/DPI_ignore.txt --hostlist-auto=/sdcard/Android/dpi/DPI_list.txt --hostlist-auto-fail-threshold=2 --hostlist-auto-fail-time=60 --hostlist-auto-retrans-threshold=2 --dpi-desync=fake --dpi-desync-repeats=6 --dpi-desync-fooling=md5sig --dpi-desync-fake-tls=$MODDIR/fake/tls_clienthello_sberbank_ru.bin --dpi-desync-fake-quic=$MODDIR/fake/quic_initial_vk_com.bin";
-DesyncQUIC="--new --filter-udp=443,6969 --dpi-desync=fake --dpi-desync-any-protocol --dpi-desync-fake-quic=0xC30000000108 $HOSTLIST_NOAUTO";
+source $MODDIR/config.conf
 ###################
 
 #Collecting all Desync to one
@@ -142,10 +132,10 @@ echo "AntiDPI service disabled"; return 0; fi;
 #Autostart on Magisk
 if [ "$1" == "autostart" ]; then
 if [ "$2" == "0" ]; then
-sed -i 's/AUTOSTART=".*"/AUTOSTART="false"/1' "/system/bin/service.sh";
+sed -i 's/AUTOSTART=".*"/AUTOSTART="false"/1' "$MODDIR/service.sh";
 echo "Auto-start on Magisk disabled";
 elif [ "$2" == "1" ]; then
-sed -i 's/AUTOSTART=".*"/AUTOSTART="true"/1' "/system/bin/service.sh";
+sed -i 's/AUTOSTART=".*"/AUTOSTART="true"/1' "$MODDIR/service.sh";
 echo "Autostart on Magisk enabled"; 
 else echo "use autostart 1 or 0"; 
 fi; fi;
