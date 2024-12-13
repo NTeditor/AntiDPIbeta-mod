@@ -1,0 +1,48 @@
+Manifest-Version: 1.0
+Created-By: 1.0 (Android SignApk)
+
+Name: hostlists/DPI_ignore.txt
+SHA1-Digest: d0OL6b7jV4DxkIJ6FmUqS4Q5nbY=
+
+Name: customize.sh
+SHA1-Digest: dREGAsZ50MSo2hV1L3fJytt62CE=
+
+Name: service.sh
+SHA1-Digest: Vb/9AVblcj6FccYYS3JhYPjuQH8=
+
+Name: module.prop
+SHA1-Digest: YKdRJke70OBlgS7Lp0P2Q1S3hWY=
+
+Name: nfqws_mipsel
+SHA1-Digest: yXAJCY62lH32q1HkhUPe3dcVFsM=
+
+Name: META-INF/com/google/android/update-binary
+SHA1-Digest: loe1HxcrP5RUZT8VDDpKL7O0sAg=
+
+Name: nfqws_arm64
+SHA1-Digest: 1QDU2i9FKHV89pnn+CD5vLoahWA=
+
+Name: hostlists/DPI_list.txt
+SHA1-Digest: tk56QvxWIxFceDmkI3+RP5Whoac=
+
+Name: META-INF/com/google/android/updater-script
+SHA1-Digest: Lzl1y1cC6TvXytLj6okU81/P8AA=
+
+Name: nfqws_arm
+SHA1-Digest: loXf+9KBV+Ct/sDpLr9/v/RwyuM=
+
+Name: hostlists/list-youtube.txt
+SHA1-Digest: f4qe3YvKcWngS6Bnb9XDgRljzas=
+
+Name: dpi
+SHA1-Digest: CA7d3kCLyukEkrAN+tkqsSwJg9A=
+
+Name: nfqws_mips
+SHA1-Digest: Kfd1ogD0la32eM8QNviVzPYsmw8=
+
+Name: nfqws_x86
+SHA1-Digest: l2CPk6/IvaPctXNc9tYnp7xJxpg=
+
+Name: nfqws_x64
+SHA1-Digest: x1CTp6vGqavHCYnu7rJFsKpOMC4=
+

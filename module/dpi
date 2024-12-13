@@ -1,0 +1,161 @@
+# AntiDPI script v3.2 for nfqws v62+ 
+# Full information about nfqws config https://github.com/bol-van/zapret/tree/master/docs/
+# Elf binaries for other arch in /binaries in zip https://github.com/bol-van/zapret/releases/latest/
+# For openwrt opkg install kmod-nft-queue kmod-nfnetlink-queue
+
+###################
+#Main config
+use_iptables="2"; #0=use nftables(OpenWRT), 1=use full iptables(LineageOS), 2=use lite iptables(OfficialFW), 3=use bad iptables(HarmonyOS)
+uselist="1"; #Enable or disable auto host list
+dpi_list_path="/sdcard/Android"; #Path for host lists and desync fake bin files (for Android set "/sdcard/Android")
+mkhlist="1"; #Auto creating host lists for Youtube and Discord
+###################
+dpi_list="DPI_list.txt"; #Url list 
+dpi_ignore="DPI_ignore.txt"; #Ignore url list 
+nftname="inet zapret"; iptname="mangle"; #Name of tables 
+
+#Start service
+if [ "$1" == "start" ]; then echo "Starting AntiDPI service..."; 
+
+#Auto hostlist config 
+if [ "$uselist" == "1" ]; then echo "Using auto hostlist";
+if ! [ -e "$dpi_list_path/$dpi_ignore" ]; then echo -n "" > "$dpi_list_path/$dpi_ignore"; chmod 666 "$dpi_list_path/$dpi_ignore"; fi; #If list file not found
+HOSTLIST_NOAUTO="--hostlist-auto=$dpi_list_path/$dpi_list --hostlist-exclude=$dpi_list_path/$dpi_ignore"; else HOSTLIST_NOAUTO=""; fi
+
+
+###################
+#Desync config 
+DesyncHTTP="--filter-tcp=80,8000 --wssize=1:6 --dpi-desync=split --dpi-desync-fooling=md5sig,badsum --dpi-desync-ttl=0 $HOSTLIST_NOAUTO";
+
+Desync1="--new --filter-tcp=443 --wssize=1:6 --dpi-desync=fake --dpi-desync-repeats=2 --dpi-desync-autottl=2 --dpi-desync-fake-tls=0x16030102 --hostlist=$dpi_list_path/list-youtube.txt"; #YouTube
+Desync2="--new --filter-udp=50000-50099 --dpi-desync=fake --dpi-desync-any-protocol --dpi-desync-fake-quic=0xC30000000108"; #Discord
+
+#Desync3="--new ";
+#Desync4="--new ";
+#Desync5="--new ";
+
+DesyncHTTPS="--new --filter-tcp=443 --wssize=1:6 --dpi-desync=disorder2 $HOSTLIST_NOAUTO";
+DesyncQUIC="--new --filter-udp=443,6969 --dpi-desync=fake --dpi-desync-any-protocol --dpi-desync-fake-quic=0xC30000000108 $HOSTLIST_NOAUTO";
+###################
+
+#Collecting all Desync to one
+NFQWS_OPT="$(echo $DesyncHTTP $Desync1 $Desync2 $Desync3 $Desync4 $Desync5 $DesyncHTTPS $DesyncQUIC | sed 's/  / /g')";
+#echo "Debug all Desync: $Desync;" 
+
+
+#Custom sites to hostlist
+if [ "$mkhlist" == "1" ]; then 
+#Creating Youtube hostlist
+if ! [ -e "$dpi_list_path/list-youtube.txt" ]; then echo "Creating Youtube hostlist";
+echo "youtube.com" >> $dpi_list_path/list-youtube.txt
+echo "googlevideo.com" >> $dpi_list_path/list-youtube.txt
+echo "ytimg.com" >> $dpi_list_path/list-youtube.txt
+echo "ggpht.com" >> $dpi_list_path/list-youtube.txt
+echo "youtubei.googleapis.com" >> $dpi_list_path/list-youtube.txt
+chmod 666 $dpi_list_path/list-youtube.txt
+fi;
+
+#Creating Discord hostlist
+if ! [ -e "$dpi_list_path/$dpi_list" ]; then echo "Creating Discord hostlist";
+echo "discord.com" >> $dpi_list_path/$dpi_list
+echo "discord.gg" >> $dpi_list_path/$dpi_list
+echo "discord.co" >> $dpi_list_path/$dpi_list
+echo "discord.dev" >> $dpi_list_path/$dpi_list
+echo "discord.new" >> $dpi_list_path/$dpi_list
+echo "discord.gift" >> $dpi_list_path/$dpi_list
+echo "discord.app" >> $dpi_list_path/$dpi_list
+echo "discord.media" >> $dpi_list_path/$dpi_list
+echo "discordapp.com" >> $dpi_list_path/$dpi_list
+echo "discordapp.net" >> $dpi_list_path/$dpi_list
+echo "discordcdn.com" >> $dpi_list_path/$dpi_list
+echo "discordstatus.com" >> $dpi_list_path/$dpi_list
+echo "dis.gd" >> $dpi_list_path/$dpi_list
+echo "discord-attachments-uploads-prd.storage.googleapis.com" >> $dpi_list_path/$dpi_list
+chmod 666 $dpi_list_path/$dpi_list
+fi; fi;
+
+#Custom interface
+if [ -n "$2" ]; then iface=$2; echo "Starting for interface $iface"; 
+if [ "$use_iptables" == "0" ]; then iifnm="iifname $iface"; oifnm="oifname $iface";
+else iifnm="-i $iface"; oifnm="-o $iface"; fi;
+else iifnm=""; oifnm=""; echo "Starting for all interfaces"; fi; 
+
+#NetFilter rules
+if [ "$uselist" == "1" ]; then sysctl net.netfilter.nf_conntrack_tcp_be_liberal=1 > /dev/null; fi; 
+if [[ "$(echo $NFQWS_OPT | grep -c badsum)" != "0" ]]; then sysctl net.netfilter.nf_conntrack_checksum=0 > /dev/null; fi;
+#net.netfilter.nf_conntrack_tcp_ignore_invalid_rst=1; #X3
+
+#Collecting ports
+NFQWS_PORTS_TCP="$(echo $NFQWS_OPT | grep -oE 'filter-tcp=[0-9,-]+' | sed -e 's/.*=//g' -e 's/,/\n/g' | sort -un)";
+NFQWS_PORTS_UDP="$(echo $NFQWS_OPT | grep -oE 'filter-udp=[0-9,-]+' | sed -e 's/.*=//g' -e 's/,/\n/g' | sort -un)";
+#echo "Debug tcp ports: $NFQWS_PORTS_TCP";
+#echo "Debug udp ports: $NFQWS_PORTS_UDP";
+
+
+#Iptables connbytes config
+cbOrig="-m connbytes --connbytes-dir=original --connbytes-mode=packets --connbytes 1:12 -m mark ! --mark 0x40000000/0x40000000";
+cbReply="-m connbytes --connbytes-dir=reply --connbytes-mode=packets --connbytes 1:6 -m mark ! --mark 0x40000000/0x40000000";
+
+#Add port to iptables 
+iptAdd() { #echo "Debug ipt_Add tcp/udp: $1 PortNum: $2"
+if [[ "$use_iptables" == "3" ]]; then cbOrig=""; cbReply=""; fi; #If bad iptables
+if [[ "$use_iptables" == "1" ]]; then echo "Using full iptables for $1";
+iptDPort="-m multiport --dports $(echo $2 | sed -e 's/ /,/g' -e 's/-/:/g')";
+iptSPort="-m multiport --sports $(echo $2 | sed -e 's/ /,/g' -e 's/-/:/g')";
+else iptDPort="--dport $2"; iptSPort="--sport $2"; fi
+iptables -t $iptname -I POSTROUTING $oifnm -p $1 $iptDPort $cbOrig -j NFQUEUE --queue-num 200 --queue-bypass;
+if [ "$uselist" == "1" ]; then iptables -t $iptname -I PREROUTING $iifnm -p $1 $iptSPort $cbReply -j NFQUEUE --queue-num 200 --queue-bypass; fi;
+}
+
+iptMultiPort() { #tcp/udp; ports
+if [[ $use_iptables == "1" ]]; then iptAdd "$1" "$2"; #If full iptables
+else for current_port in $2; do
+if [[ $current_port == *-* ]]; then for i in $(seq ${current_port%-*} ${current_port#*-}); do iptAdd "$1" "$i"; done 
+else iptAdd "$1" "$current_port"; fi; done; fi;
+}
+
+#Using Nftables
+if [[ "$use_iptables" == "0" ]]; then echo "Using nftables";
+nft create table $nftname; 
+nft add chain $nftname post "{type filter hook postrouting priority mangle;}";
+nft add rule $nftname post meta mark and 0x40000000 == 0 $oifnm tcp dport "{ $(echo $NFQWS_PORTS_TCP | sed 's/ /,/g') }" ct original packets 1-12 queue num 200 bypass;
+nft add rule $nftname post meta mark and 0x40000000 == 0 $oifnm udp dport "{ $(echo $NFQWS_PORTS_UDP | sed 's/ /,/g') }" ct original packets 1-12 queue num 200 bypass;
+if [[ "$uselist" == "1" ]]; then 
+nft add chain $nftname pre "{type filter hook prerouting priority filter;}";
+nft add rule $nftname pre $iifnm tcp sport "{ $(echo $NFQWS_PORTS_TCP | sed 's/ /,/g') }" ct reply packets 1-3 queue num 200 bypass;
+nft add rule $nftname pre $iifnm udp sport "{ $(echo $NFQWS_PORTS_UDP | sed 's/ /,/g') }" ct reply packets 1-3 queue num 200 bypass;
+
+fi; else iptMultiPort "tcp" "$NFQWS_PORTS_TCP"; iptMultiPort "udp" "$NFQWS_PORTS_UDP"; fi;
+
+nfqws --daemon --uid=0:0 --qnum=200 $NFQWS_OPT 
+echo "AntiDPI service enabled"; return 0; fi
+
+#Stop service
+if [ "$1" == "stop" ]; then
+if [[ $use_iptables == "0" ]]; then nft delete table $nftname; 
+else iptables -t $iptname -F PREROUTING; iptables -t $iptname -F POSTROUTING; fi; 
+kill "$(pidof nfqws)";
+echo "AntiDPI service disabled"; return 0; fi;
+
+#Autostart on Magisk
+if [ "$1" == "autostart" ]; then
+if [ "$2" == "0" ]; then
+sed -i 's/AUTOSTART=".*"/AUTOSTART="false"/1' "/system/bin/service.sh";
+echo "Auto-start on Magisk disabled";
+elif [ "$2" == "1" ]; then
+sed -i 's/AUTOSTART=".*"/AUTOSTART="true"/1' "/system/bin/service.sh";
+echo "Autostart on Magisk enabled"; 
+else echo "use autostart 1 or 0"; 
+fi; fi;
+
+#Help info
+if [ -z "$1" ]; then
+echo " Usage AntiDPI service: "; 
+echo "$(basename $0) start - Run AntiDPI for all interfaces";
+echo "$(basename $0) start interface - Run AntiDPI for custom interface"; 
+echo "$(basename $0) stop - Stop AntiDPI and remove tables rules"; 
+echo "";
+echo "$(basename $0) autostart 1 - Enable autostart on Magisk"
+echo "$(basename $0) autostart 0 - Disable autostart on Magisk"
+echo "";
+echo " AntiDPI service based on bol-van/zapret/nfqws"; fi; 

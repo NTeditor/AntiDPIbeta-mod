@@ -1,0 +1,64 @@
+#!/sbin/sh
+
+#Beta test script for twrp and magisk
+export ZIPFILE="$3"
+export OUTFD="$2"; #Magisk
+export script_dir="/tmp/AntiDPI"
+set -o pipefail
+
+if [[ -e "/data/adb/magisk/util_functions.sh" ]]; then 
+umask 022
+. /data/adb/magisk/util_functions.sh 
+ui_print "Installing Anti DPI script v3.2 by 4pda user MIR371 from Magisk"
+install_module
+exit 0
+else
+ui_print() {
+echo "ui_print $1" > "/proc/$$/fd/$OUTFD";
+}
+
+ui_print "Installing Anti DPI script v3.2 by 4pda user MIR371"
+mkdir $script_dir 
+unzip -oq "$ZIPFILE" -d $script_dir 
+chmod -R 755 $script_dir
+
+
+if [[ "$(busybox echo 1)" == "1" ]]; then 
+ui_print "Use busybox mount"; 
+busybox mount -o rw "/system"; 
+else ui_print "Mounting system"; 
+mount -o rw /system
+fi
+if [[ "$(mount | grep -c system)" == "0" ]]; then 
+ui_print "Error cannot mount system"; 
+ui_print "Installing to Cache"; 
+mount -o rw /cache
+cp $script_dir/dpi /cache/dpi
+cp $script_dir/nfqws_arm32 /cache/nfqws
+chmod 755 /cache/dpi
+chmod 755 /cache/nfqws
+sed -i 's/nfqws --daemon/\/cache\/nfqws --daemon/' /cache/dpi
+else
+cp $script_dir/dpi /system/bin/dpi
+cp $script_dir/nfqws_arm /system/bin/nfqws
+chmod 755 /system/bin/dpi
+chmod 755 /system/bin/nfqws
+fi;
+fi;
+	
+
+
+ui_print "Anti DPI script installed"
+ui_print "Reboot you phone" 
+ui_print " "
+ui_print "For start on Android print in console:" 
+ui_print "su"
+if [ -e "/system/bin/dpi" ]; then 
+ui_print "dpi start";
+else
+ui_print "/cache/dpi start";
+fi
+ui_print " "
+ui_print "For more information see readme.txt in current zip"
+ui_print " "
+
