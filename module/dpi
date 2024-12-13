@@ -28,6 +28,7 @@ HOSTLIST_NOAUTO="--hostlist-auto=$dpi_list_path/$dpi_list --hostlist-exclude=$dp
 ###################
 #Desync config 
 source $MODDIR/config.conf
+
 ###################
 
 #Collecting all Desync to one
