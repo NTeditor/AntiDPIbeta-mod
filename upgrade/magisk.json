@@ -1,6 +1,6 @@
 {
-    "version": "0.3",
-    "versionCode": 3,
-    "zipUrl": "https://github.com/NTeditor/AntiDPIbeta-mod/raw/refs/heads/main/testing%20version/module-v0.3.zip",
-    "changelog": "https://raw.githubusercontent.com/NTeditor/AntiDPIbeta-mod/refs/heads/main/upgrade/log.md"
+	"version": "v1.10.1",
+	"versionCode": 7115,
+	"zipUrl": "https://github.com/NTeditor/AntiDPIbeta-mod/raw/refs/heads/main/testing%20version/module-v0.3.zip",
+	"changelog": "https://raw.githubusercontent.com/NTeditor/AntiDPIbeta-mod/refs/heads/main/upgrade/log.md"
 }
