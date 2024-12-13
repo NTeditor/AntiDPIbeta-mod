@@ -11,6 +11,8 @@ dpi_list_path="/sdcard/Android/dpi/"; #Path for host lists and desync fake bin f
 mkhlist="1"; #Auto creating host lists for Youtube and Discord
 ###################
 dpi_list="DPI_list.txt"; #Url list 
+MODDIR=/data/adb/modules/zapret
+fakedir=$MODDIR/fake
 dpi_ignore="DPI_ignore.txt"; #Ignore url list 
 nftname="inet zapret"; iptname="mangle"; #Name of tables 
 
@@ -27,14 +29,14 @@ HOSTLIST_NOAUTO="--hostlist-auto=$dpi_list_path/$dpi_list --hostlist-exclude=$dp
 #Desync config 
 DesyncHTTP="--filter-tcp=80,8000 --wssize=1:6 --dpi-desync=split --dpi-desync-fooling=md5sig,badsum --dpi-desync-ttl=0 $HOSTLIST_NOAUTO";
 
-Desync1="--new --filter-tcp=443 --wssize=1:6 --dpi-desync=fake --dpi-desync-repeats=2 --dpi-desync-autottl=2 --dpi-desync-fake-tls=0x16030102 --hostlist=$dpi_list_path/list-youtube.txt"; #YouTube
+Desync1="--new --filter-tcp=443 --dpi-desync=fake,split2 --dpi-desync-repeats=11 --dpi-desync-fooling=md5sig --dpi-desync-fake-tls=$fakedir/tls_clienthello_www_google_com.bin --hostlist=$dpi_list_path/list-youtube.txt --new --filter-udp=443 --hostlist=$dpi_list_path/list-youtube.txt --dpi-desync=fake --dpi-desync-repeats=11 --dpi-desync-fake-quic=$fakedir/quic_initial_www_google_com.bin"; #YouTube
 Desync2="--new --filter-udp=50000-50099 --dpi-desync=fake --dpi-desync-any-protocol --dpi-desync-fake-quic=0xC30000000108"; #Discord
 
 #Desync3="--new ";
 #Desync4="--new ";
 #Desync5="--new ";
 
-DesyncHTTPS="--new --filter-tcp=443 --wssize=1:6 --dpi-desync=disorder2 $HOSTLIST_NOAUTO";
+DesyncHTTPS="--new --filter-tcp=443 --hostlist-exclude=/sdcard/Android/dpi/DPI_ignore.txt --hostlist-auto=/sdcard/Android/dpi/DPI_list.txt --hostlist-auto-fail-threshold=2 --hostlist-auto-fail-time=60 --hostlist-auto-retrans-threshold=2 --dpi-desync=fake --dpi-desync-repeats=6 --dpi-desync-fooling=md5sig --dpi-desync-fake-tls=$MODDIR/fake/tls_clienthello_sberbank_ru.bin --dpi-desync-fake-quic=$MODDIR/fake/quic_initial_vk_com.bin";
 DesyncQUIC="--new --filter-udp=443,6969 --dpi-desync=fake --dpi-desync-any-protocol --dpi-desync-fake-quic=0xC30000000108 $HOSTLIST_NOAUTO";
 ###################
 
