@@ -130,16 +130,20 @@ else iptables -t $iptname -F PREROUTING; iptables -t $iptname -F POSTROUTING; fi
 kill "$(pidof nfqws)";
 echo "AntiDPI service disabled"; return 0; fi;
 
+#ReStart service
+if [ "$1" == "stop" ]; then
+su -c $MODDIR/action.sh; return 0; fi;
+
 #Autostart on Magisk
-if [ "$1" == "autostart" ]; then
-if [ "$2" == "0" ]; then
-sed -i 's/AUTOSTART=".*"/AUTOSTART="false"/1' "$MODDIR/service.sh";
-echo "Auto-start on Magisk disabled";
-elif [ "$2" == "1" ]; then
-sed -i 's/AUTOSTART=".*"/AUTOSTART="true"/1' "$MODDIR/service.sh";
-echo "Autostart on Magisk enabled"; 
-else echo "use autostart 1 or 0"; 
-fi; fi;
+#if [ "$1" == "autostart" ]; then
+#if [ "$2" == "0" ]; then
+#sed -i 's/AUTOSTART=".*"/AUTOSTART="false"/1' "$MODDIR/service.sh";
+#echo "Auto-start on Magisk disabled";
+#elif [ "$2" == "1" ]; then
+#sed -i 's/AUTOSTART=".*"/AUTOSTART="true"/1' "$MODDIR/service.sh";
+#echo "Autostart on Magisk enabled"; 
+#else echo "use autostart 1 or 0"; 
+#fi; fi;
 
 #Help info
 if [ -z "$1" ]; then
@@ -148,7 +152,9 @@ echo "$(basename $0) start - Run AntiDPI for all interfaces";
 echo "$(basename $0) start interface - Run AntiDPI for custom interface"; 
 echo "$(basename $0) stop - Stop AntiDPI and remove tables rules"; 
 echo "";
-echo "$(basename $0) autostart 1 - Enable autostart on Magisk"
-echo "$(basename $0) autostart 0 - Disable autostart on Magisk"
+echo "$(basename $0) restart - Restarting (TESTING..)"
+echo "";
+echo "$(basename $0) autostart 1 - Enable autostart on Magisk (DISABLED)"
+echo "$(basename $0) autostart 0 - Disable autostart on Magisk(DISABLED)"
 echo "";
 echo " AntiDPI service based on bol-van/zapret/nfqws"; fi; 
