@@ -1,11 +1,9 @@
-+ fix upgrade
-+ fix autostart
+- Удален автозапуск
+x Изменен config.conf: Заменен clienthello vk на clienthello google
++ Добавлен action.sh для Запуска/Перезапуска zapret из под magisk
 
 ## What's Changed
-* v0.3 by @NTeditor in https://github.com/NTeditor/AntiDPIbeta-mod/pull/1
-* merge to main by @NTeditor in https://github.com/NTeditor/AntiDPIbeta-mod/pull/2
+* README.md by @NTeditor in https://github.com/NTeditor/AntiDPIbeta-mod/pull/4
 
-## New Contributors
-* @NTeditor made their first contribution in https://github.com/NTeditor/AntiDPIbeta-mod/pull/1
 
-**Full Changelog**: https://github.com/NTeditor/AntiDPIbeta-mod/commits/v0.4
+**Full Changelog**: https://github.com/NTeditor/AntiDPIbeta-mod/compare/v0.4...v0.6user1
