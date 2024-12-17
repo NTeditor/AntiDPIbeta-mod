@@ -1,7 +1,7 @@
 id=antidpi
 name=AntiDPI
 version=v0.6
-versionCode=6
+versionCode=7
 author=NTeditor (Автор оригенальной версии MIR371)
 description=
 updateJson=https://raw.githubusercontent.com/NTeditor/AntiDPIbeta-mod/refs/heads/main/upgrade/magisk.json
